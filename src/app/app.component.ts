@@ -93,37 +93,53 @@ export class AppComponent implements OnInit, AfterViewInit{
   passMap(map: any){
     let sizeH, sizeW, temp
     const that = this
-    this.setSizeOfMap(map, 0).subscribe({
-      complete() {
-        sizeW = Number(map.nativeElement.firstChild.attributes[0].value.replace('px',''))
-        sizeH = Number(map.nativeElement.firstChild.attributes[1].value.replace('px',''))
-        if(sizeW > sizeH){
-          temp = sizeW
-          sizeW = sizeH
-          sizeH = temp
-        }
 
-        let K2 = that.grid.curRowHeight*that.dashboard[0].rows/sizeH * Number(map.nativeElement.firstChild.attributes[0].value.replace('px',''))
-        // K2 = K2 / size * 100
-        if(that.grid.curHeight/sizeH < 1){
-          map.nativeElement.children[0].setAttribute(
-            "style", `display: block; margin: auto; height: auto; width: ${K2}px`
-          );
-        }
+      this.setSizeOfMap(map, 0).subscribe({
+          complete() {
+
+    sizeW = Number(map.nativeElement.firstChild.attributes[0].value.replace('px',''))
+    sizeH = Number(map.nativeElement.firstChild.attributes[1].value.replace('px',''))
+if(sizeW > sizeH){
+  temp = sizeW
+  sizeW = sizeH
+  sizeH = temp
+}
+
+setTimeout(() => {
+  console.log(that.dashboard[0].rows);
+
+  console.log('here h1', that.grid.curHeight, sizeW/sizeH,'w1 ' ,that.grid.curHeight*sizeW/sizeH, sizeW);
 
 
-      },
-    })
+  console.log(that.grid.curHeight, that.grid.curRowHeight, that.dashboard[0].rows, that.grid.curRowHeight* that.dashboard[0].rows);
+
+  let K2 = that.grid.curRowHeight*that.dashboard[0].rows/sizeH * Number(map.nativeElement.firstChild.attributes[0].value.replace('px',''))
+  // K2 = K2 / sizeH * 100
+  console.log(K2/sizeH, K2);
+
+  console.log(that.grid.curRowHeight*21*sizeW/sizeH);
+
+if(that.grid.curHeight/sizeH < 1){
+  map.nativeElement.children[0].setAttribute(
+    "style", `display: block; margin: auto; height: auto; width: ${that.grid.curRowHeight*21*sizeW/(sizeH*that.grid.curColWidth*4)*100}%`
+  );
+}
+
+console.log(map.nativeElement);
+
+}, 5);
+          },
+      })
   }
 
   passControls(map: any){
     const that = this
-    this.setSizeOfMap(map, 2).subscribe({
-      complete() {
-       that.dashboard[2].y = that.dashboard[0].rows - that.dashboard[2].rows
-       that.options.api.optionsChanged()
-      },
-    })
+    // this.setSizeOfMap(map, 2).subscribe({
+    //   complete() {
+    //    that.dashboard[2].y = that.dashboard[0].rows - that.dashboard[2].rows
+    //    that.options.api.optionsChanged()
+    //   },
+    // })
 
     // console.log(this.dashboard[0].rows - this.dashboard[2].rows);
     // this.dashboard[2].y = this.dashboard[0].rows - this.dashboard[2].rows
@@ -136,13 +152,16 @@ export class AppComponent implements OnInit, AfterViewInit{
     let size
     function setRows(observer: any){
       setTimeout(() => {
+
+
         let num = map.nativeElement.getBoundingClientRect().height/that.grid.curRowHeight
+        console.log('ee',map.nativeElement.getBoundingClientRect().height);
         if(!that.isInt(num)){
           num = num | 0
           num += 1
         }
         that.dashboard[n].rows = num
-        that.options.api.optionsChanged()
+        // that.options.api.optionsChanged()
         observer.complete()
         return {unsubscribe(){}}
       }, 10);

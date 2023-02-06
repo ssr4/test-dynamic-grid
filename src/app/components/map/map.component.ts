@@ -19,9 +19,9 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(){
     // центрируем блок по центру
-		this.elementRef.nativeElement.children[0].setAttribute(
-			"style", "display: block; margin: auto"
-		);
+		// this.elementRef.nativeElement.children[0].setAttribute(
+		// 	"style", "display: block; margin: auto;width: 100%; height: 100%"
+		// );
 
     this.passMap.emit(this.elementRef);
   }
