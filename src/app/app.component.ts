@@ -90,38 +90,54 @@ export class AppComponent implements OnInit, AfterViewInit{
 
   }
 
-passMap(map: any){
-  let sizeH, sizeW, temp
-  const that = this
-  this.setSizeOfMap(map, 0).subscribe({
-    complete() {
-      sizeW = Number(map.nativeElement.firstChild.attributes[0].value.replace('px',''))
-      sizeH = Number(map.nativeElement.firstChild.attributes[1].value.replace('px',''))
+  passMap(map: any){
+    const that = this
+    this.setMap(map).subscribe({
+        complete(){
+          let num = map.nativeElement.getBoundingClientRect().height/that.grid.curRowHeight
+          if(!that.isInt(num)){
+            num = num | 0
+            num += 1
+          }
+          that.dashboard[0].rows = num
+          that.options.api.optionsChanged()
+        }
+      })
+  }
+
+  setMap(map: any){
+    let sizeH, sizeW
+    const that = this
+    sizeW = Number(map.nativeElement.firstChild.attributes[0].value.replace('px',''))
+    sizeH = Number(map.nativeElement.firstChild.attributes[1].value.replace('px',''))
+    function setRows(observer: any){
       setTimeout(() => {
         if(sizeW > sizeH){
           if(sizeW > that.grid.curColWidth*4)
             map.nativeElement.children[0].setAttribute(
-                  "style", `display: block; margin: auto; height: auto; width: 100%;`
-            );
+                "style", `display: block; margin: auto; height: auto; width: 100%;`);
         } else{
-          let h = document.documentElement.clientHeight/that.grid.curRowHeight | 0
-          if(that.grid.curHeight/sizeH < 1)
-            map.nativeElement.children[0].setAttribute(
-              "style", `display: block; margin: auto; height: auto; width: ${that.grid.curRowHeight*h*sizeW/(sizeH*that.grid.curColWidth*4)*100}%`
-            );
-        }
+            let h = document.documentElement.clientHeight/that.grid.curRowHeight | 0
+            if(that.grid.curHeight/sizeH < 1)
+              map.nativeElement.children[0].setAttribute(
+                "style", `display: block; margin: auto; height: auto; width: ${that.grid.curRowHeight*h*sizeW/(sizeH*that.grid.curColWidth*4)*100}%`);
+          }
+        observer.complete()
+        return {unsubscribe(){}}
       }, 5);
-    }})
+    }
+    return new Observable(setRows)
   }
 
   passControls(map: any){
     const that = this
-    // this.setSizeOfMap(map, 2).subscribe({
-    //   complete() {
-    //    that.dashboard[2].y = that.dashboard[0].rows - that.dashboard[2].rows
-    //    that.options.api.optionsChanged()
-    //   },
-    // })
+
+    this.setSizeOfMap(map, 2).subscribe({
+      complete() {
+        that.dashboard[2].y = that.dashboard[0].rows - that.dashboard[2].rows
+        that.options.api.optionsChanged()
+      },
+    })
 
     // console.log(this.dashboard[0].rows - this.dashboard[2].rows);
     // this.dashboard[2].y = this.dashboard[0].rows - this.dashboard[2].rows
@@ -134,19 +150,16 @@ passMap(map: any){
     let size
     function setRows(observer: any){
       setTimeout(() => {
-
-
         let num = map.nativeElement.getBoundingClientRect().height/that.grid.curRowHeight
-        console.log('ee',map.nativeElement.getBoundingClientRect().height);
         if(!that.isInt(num)){
           num = num | 0
           num += 1
         }
         that.dashboard[n].rows = num
-        // that.options.api.optionsChanged()
+        that.options.api.optionsChanged()
         observer.complete()
         return {unsubscribe(){}}
-      }, 10);
+      }, 100);
     }
 
     return new Observable(setRows)
