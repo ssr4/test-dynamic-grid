@@ -86,9 +86,7 @@ export class AppComponent implements OnInit, AfterViewInit{
 
   }
 
-  ngAfterViewInit(){
-
-  }
+  ngAfterViewInit(){}
 
   passMap(map: any){
     const that = this
@@ -118,6 +116,8 @@ export class AppComponent implements OnInit, AfterViewInit{
                 "style", `display: block; margin: auto; height: auto; width: 100%;`);
         } else{
             let h = document.documentElement.clientHeight/that.grid.curRowHeight | 0
+            console.log(document.documentElement.clientHeight);
+
             if(that.grid.curHeight/sizeH < 1)
               map.nativeElement.children[0].setAttribute(
                 "style", `display: block; margin: auto; height: auto; width: ${that.grid.curRowHeight*h*sizeW/(sizeH*that.grid.curColWidth*4)*100}%`);
@@ -131,23 +131,16 @@ export class AppComponent implements OnInit, AfterViewInit{
 
   passControls(map: any){
     const that = this
-
-    this.setSizeOfMap(map, 2).subscribe({
+    this.setSizeOfControls(map, 2).subscribe({
       complete() {
         that.dashboard[2].y = that.dashboard[0].rows - that.dashboard[2].rows
         that.options.api.optionsChanged()
       },
     })
-
-    // console.log(this.dashboard[0].rows - this.dashboard[2].rows);
-    // this.dashboard[2].y = this.dashboard[0].rows - this.dashboard[2].rows
-    // this.options.api.optionsChanged()
   }
 
-
-  setSizeOfMap(map: any, n?: number){
+  setSizeOfControls(map: any, n?: number){
     const that = this
-    let size
     function setRows(observer: any){
       setTimeout(() => {
         let num = map.nativeElement.getBoundingClientRect().height/that.grid.curRowHeight
@@ -159,9 +152,8 @@ export class AppComponent implements OnInit, AfterViewInit{
         that.options.api.optionsChanged()
         observer.complete()
         return {unsubscribe(){}}
-      }, 100);
+      }, 5);
     }
-
     return new Observable(setRows)
   }
 
